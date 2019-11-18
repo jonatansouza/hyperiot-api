@@ -12,6 +12,24 @@ router.get('/', function(req, res, next) {
 router.post('/', function(req, res, next) {
   participants.insertParticipant(req.body || {}).then(docs => {
      res.json(docs);
+  }).catch(err => {
+    res.status(400).json({
+      err, 
+      msg: 'Bad Request'
+    })
+  })
+});
+
+router.put('/:id', function(req, res, next) {
+  participants.updateParticipant({
+    email: req.params.id
+  }, req.body).then(docs => {
+     res.json(docs);
+  }).catch(err => {
+    res.status(400).json({
+      err,
+      message: 'Bad Request'
+    })
   })
 });
 
@@ -37,4 +55,5 @@ router.delete('/:id', function(req, res, next) {
      res.json(docs);
   })
 });
+
 module.exports = router;
