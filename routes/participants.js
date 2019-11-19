@@ -2,7 +2,15 @@ const express = require('express');
 const router = express.Router();
 const participants = require('../models/participants.model')
 
-/* GET users listing. */
+/**
+ * @swagger
+ * /participants:
+ *  get:
+ *    description: participants endpoint
+ *    responses: 
+ *      '200':
+ *        description: success get participants
+ */
 router.get('/', function(req, res, next) {
   participants.getAllParticipants().then(docs => {
     res.json(docs);

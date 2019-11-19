@@ -1,16 +1,34 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var cloudRouter = require('./routes/cloud');
-var assetsRouter = require('./routes/assets');
-var participantsRouter = require('./routes/participants');
+// swagger
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
 
-var app = express();
+const indexRouter = require('./routes/index');
+const usersRouter = require('./routes/users');
+const cloudRouter = require('./routes/cloud');
+const assetsRouter = require('./routes/assets');
+const participantsRouter = require('./routes/participants');
+
+const app = express();
+
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    info: {
+      title: 'Hyperiot api',
+      description: 'API to handle client / blockchain'
+    },
+    servers: ['http://localhost:3000']
+  },
+  apis: ['./docs/**/*.yaml']
+}
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/explorer', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
