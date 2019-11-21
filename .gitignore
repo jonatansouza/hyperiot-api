@@ -29,3 +29,6 @@ benchmarks/graphs
 
 #credentials
 credentials/* 
+
+#tmp files
+tmp/*
