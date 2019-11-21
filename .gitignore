@@ -32,3 +32,6 @@ credentials/*
 
 #tmp files
 tmp/*
+
+#mongo data
+data/*
