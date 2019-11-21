@@ -3,7 +3,7 @@ paths:
   /participants:
     get:                 # endpoint request type (post request)
       tags:               # Tag property
-        - User            # Value of the tag
+        - Participant            # Value of the tag
       summary: Lista participants
       produces:
       - application/json
@@ -12,7 +12,7 @@ paths:
           description: Lista Objetos
     post:                 # endpoint request type (post request)
       tags:               # Tag property
-        - User            # Value of the tag
+        - Participant            # Value of the tag
       summary: Cria um novo participant
       produces:
       - application/json
@@ -32,13 +32,30 @@ paths:
   /participants/{email}:
     get:                 # endpoint request type (post request)
       tags:               # Tag property
-        - User            # Value of the tag
+        - Participant            # Value of the tag
       summary: Localiza usuário pelo email
       parameters:         # request parameters
       - name: email
         in: path
         description: Parâmetro email participant
-        required: false
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:          # server responses
+        200:
+          description: Objeto encontrado        
+        404:
+          description: Objeto não encontrado
+    delete:                 # endpoint request type (post request)
+      tags:               # Tag property
+        - Participant            # Value of the tag
+      summary: Delete usuário pelo mongo id
+      parameters:         # request parameters
+      - name: email
+        in: path
+        description: Parâmetro email participant
+        required: true
         type: string
       produces:
       - application/json
