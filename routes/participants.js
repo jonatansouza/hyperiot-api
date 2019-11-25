@@ -2,24 +2,22 @@ const express = require('express');
 const router = express.Router();
 const participants = require('../models/participants.model')
 
-/**
- * @swagger
- * /participants:
- *  get:
- *    description: participants endpoint
- *    responses: 
- *      '200':
- *        description: success get participants
- */
-router.get('/', function(req, res, next) {
-  participants.getAllParticipants().then(docs => {
-    res.json(docs);
-  })
+router.get('/', async function(req, res, next) {
+   participants.getAllParticipants().then(result => {
+     res.json(result.data);
+     return;
+   }).catch(e => {
+     res.status(500).json({
+       status: 500,
+       msg: 'Internal server error'
+     })
+   })
+
 });
 
 router.post('/', function(req, res, next) {
   participants.insertParticipant(req.body || {}).then(docs => {
-     res.json(docs);
+     res.json(docs.data);
   }).catch(err => {
     res.status(400).json({
       err, 
@@ -28,39 +26,28 @@ router.post('/', function(req, res, next) {
   })
 });
 
-router.put('/:id', function(req, res, next) {
-  participants.updateParticipant({
-    email: req.params.id
-  }, req.body).then(docs => {
-     res.json(docs);
-  }).catch(err => {
-    res.status(400).json({
-      err,
-      message: 'Bad Request'
-    })
-  })
-});
-
-router.get('/:id', function(req, res, next) {
-  const params = {
-    email: req.params.id
-  }
-  participants.getAllParticipants(params).then(docs => {
-    if(docs.length){
-      res.json(docs[0]);
-      return;
-    }
-    res.status(404).send('Not found');
+router.get('/:id', async function(req, res, next) {
+  const params = req.params.id
+  try {
+    const result = await participants.getParticipantByEmail(params);
+    res.json(result.data);
     return;
-  })
+  } catch(e) {
+    res.status(404).json({
+      msg: 'Not Found'
+    })
+    return;
+  }
 });
 
 router.delete('/:id', function(req, res, next) {
-  const params = {
-    email: req.params.id
-  }
+  const params = req.params.id
   participants.deleteParticipant(params).then(docs => {
      res.json(docs);
+  }).catch(e => {
+    res.status(404).json({
+      msg: 'Not Found'
+    })
   })
 });
 

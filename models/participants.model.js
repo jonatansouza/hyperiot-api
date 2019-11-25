@@ -1,25 +1,20 @@
-const hyperiotDB = require('../config/mongo');
+const blockchain = require('../services/blockchain-api');
 
 const participantTemplate = (obj) => {
     return Object.assign({}, {
-        name: obj.name,
         email: obj.email,
-        assets: obj.assets || []
+        firstName: obj.name,
+        lastName: obj.name,
+        commoditySharedList: obj.commoditySharedList || []
     })
 }
 
 const participantsModel = {
     getAllParticipants: async function (params = {}) {
-        const participants = await hyperiotDB.getAllParticipants(params);
-        return participants;
-    },
-    getParticipantById: async function (params = {}) {
-        const participants = await hyperiotDB.getAllParticipants(params);
-        return participants;
+        return blockchain.getAllUsers(params);
     },
     getParticipantByEmail: async function (params = {}) {
-        const participants = await hyperiotDB.getAllParticipants({email: params});
-        return participants;
+        return blockchain.getUserByEmail(params);
     },
     insertParticipant: async function (params = {}) {
         //validate
@@ -28,25 +23,23 @@ const participantsModel = {
                 msg: 'Missing name or email'
             })
         }
-        const emailAlreadyInUse = await hyperiotDB.getAllParticipants({
-            email: params.email
-        })
-        if(emailAlreadyInUse &&  emailAlreadyInUse.length) {
-            return Promise.reject({
+        try {
+            await blockchain.userExists(params.email);
+            console.log('exists')
+            return  Promise.reject({
                 msg: 'Email already registered'
             })
+        }catch (e) {
+            // user available
         }
-        //insert
-        const participant = await hyperiotDB.insertParticipant(participantTemplate(params));
-        return participant;
+        return blockchain.insertUser(participantTemplate(params));
     },
     updateParticipant: async function (params, newValues) {
         const participant = await hyperiotDB.updateParticipant(params, newValues);
         return participant;
     },
     deleteParticipant: async function (params) {
-        const participant = await hyperiotDB.deleteParticipant(params);
-        return participant;
+        return blockchain.deleteUser(params);
     }
 }
 

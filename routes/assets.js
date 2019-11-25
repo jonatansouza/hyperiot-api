@@ -6,7 +6,7 @@ const assets = require('../models/assets.model')
 /* GET users listing. */
 router.get('/', function (req, res, next) {
     assets.getAllAssets().then(docs => {
-        res.json(docs);
+        res.json(docs.data);
     })
 });
 
