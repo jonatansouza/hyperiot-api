@@ -2,17 +2,18 @@
 const express = require('express');
 const router = express.Router();
 const assets = require('../models/assets.model')
+const auth = require('../interceptors/auth.interceptor')
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-    assets.getAllAssets().then(docs => {
-        res.json(docs.data);
+router.get('/', auth, function (req, res, next) {
+    assets.getAllAssets(req).then(docs => {
+        res.json(docs);
     })
 });
 
-router.post('/', function (req, res, next) {
-    assets.insertAssets(req.body || {}).then(docs => {
-        res.json(docs);
+router.post('/', auth, function (req, res, next) {
+    assets.insertAssets(req || {}).then(docs => {
+        res.json(docs.data);
     }).catch(err => {
         res.status(400).json({
             err,
@@ -44,11 +45,16 @@ router.get('/:id', function (req, res, next) {
     })
 });
 
-router.delete('/:id', function (req, res, next) {
+router.delete('/:id', async (req, res, next) => {
     const params = req.params.id;
-    assets.deleteAssets(params).then(docs => {
-        res.json(docs);
-    })
+    const result = await assets.deleteAssets(params);
+    if(!result){
+        res.status(404).json({
+            msg: 'NotFound'
+        })
+        return;
+    }
+    res.json(result);
 });
 
 module.exports = router;

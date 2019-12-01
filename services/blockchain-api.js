@@ -34,26 +34,22 @@ const blockchain = {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`;
         return requestProvider.get(url);
     },
+    assetExists: async (id) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
+        try {
+            await requestProvider.head(url);
+            return true;
+        }catch (e) {
+            return false;
+        }
+    },
     getAssetById: async function (params, email) { 
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`
         return requestProvider.post(url, data);
     },
-    deleteAssets: async function (params) {
-        const conn = await MongoDao();
-        const dbo = conn.db(ENV.MONGO_DBNAME)
-        const id = {
-            _id: new MongoDb.ObjectId(params)
-        }
-        return new Promise((resolve, reject) => {
-            dbo.collection('assets').deleteOne(id)
-                .then(docs => {
-                    conn.close();
-                    return resolve(docs);
-                }).catch(err => {
-                    console.log(err);
-                    return reject(err);
-                })
-        })
+    deleteAssets: async function (id) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
+        return requestProvider.delete(  url);
     }
 }
 

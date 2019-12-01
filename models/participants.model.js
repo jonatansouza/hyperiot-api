@@ -14,7 +14,8 @@ const participantsModel = {
         return blockchain.getAllUsers(params);
     },
     getParticipantByEmail: async function (params = {}) {
-        return blockchain.getUserByEmail(params);
+        const result = await blockchain.getUserByEmail(params);
+        return result.data || result;
     },
     insertParticipant: async function (params = {}) {
         //validate
@@ -40,6 +41,14 @@ const participantsModel = {
     },
     deleteParticipant: async function (params) {
         return blockchain.deleteUser(params);
+    },
+    participantExists: async function(params) {
+        try {
+            await blockchain.userExists(params);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 }
 

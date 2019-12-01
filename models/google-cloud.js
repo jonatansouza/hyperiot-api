@@ -9,9 +9,23 @@ const storage = new Storage({
 })
 
 const googleStorage = {
+    deleteBucket: async (bucketId) => {
+        try {
+            const deletedBucket = await storage.bucket(bucketId).delete();
+            return deleteBucket;
+        }catch(e) {
+            return false;
+        }
+    },
     createBucket: async function createBucket(bucket) {
-        const bucketCreated = await storage.createBucket(bucket)
-        return bucketCreated;
+        try {
+            const bucketCreated = await storage.createBucket(bucket)
+            return bucketCreated;
+        }
+        catch(e) {
+            return false;
+        }
+        
     },
 
     getBuckets: async function getBuckets() {
