@@ -1,11 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const participants = require('../models/participants.model')
-const auth = require('../interceptors/auth.interceptor')
 
-router.get('/', auth, (req, res, next) => {
-   participants.getAllParticipantsOnWhiteList(req).then(result => {
-     res.json(result);
+router.get('/', async function(req, res, next) {
+   participants.getAllParticipants().then(result => {
+     res.json(result.data);
      return;
    }).catch(e => {
      res.status(500).json({
@@ -13,11 +12,18 @@ router.get('/', auth, (req, res, next) => {
        msg: 'Internal server error'
      })
    })
+
 });
 
-router.post('/', auth, function(req, res, next) {
-  participants.insertParticipant(req || {}).then(docs => {
-     res.json(docs);
+router.post('/createAdmin', function(req, res, next) {
+  const participant = {
+    email: "admin@gmail.com",
+    password: "$2a$08$loTSHMhvC8bTfAvKqu99pe8zAsuFn2fMS2Ib8blwynTYGM1E.VHWi",
+    name: "Administrador",
+    registered: `${new Date().getTime()}`
+  }
+  participants.insertParticipant(participant).then(docs => {
+     res.json(docs.data);
   }).catch(err => {
     res.status(400).json({
       err, 

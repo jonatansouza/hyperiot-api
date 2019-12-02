@@ -16,23 +16,30 @@ const assetsModel = {
     },
     insertAssets: async function (req) {
         const params = req.body;
+        if(!params.name || !params.description) {
+            return Promise.reject({
+                msg: 'O nome e a descrição são obrigatórios'
+            })
+        }
+        params.name = params.name.toLocaleLowerCase();
         const assetId = `${req.sessionEmail}-${params.name}`.match(/[A-Za-z0-9-]/g).join('');
         const exists = await blockchain.assetExists(assetId);
         if(exists){
             return Promise.reject({
-                msg: 'ja cadastrado'
+                msg: 'Dispositivo já cadastrado!'
             })
         }
         const bucket = await cloudController.createBucket(assetId);
         if(!bucket) {
             return Promise.reject({
-                msg: 'Erro ao criar o bucket'
+                msg: 'Erro ao criar o bucket na cloud'
             })
         }
         params['token'] = loginController.generateToken(assetId);
         params['commodityId'] = assetId;
         params['owner'] = req.sessionEmail;
         params['allowedUsers'] = [req.sessionEmail]
+        params['registered'] = new Date().getTime();
         return blockchain.insertAssets(params);
     },
     deleteAssets: async (params) => {

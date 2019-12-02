@@ -50,6 +50,11 @@ const blockchain = {
     deleteAssets: async function (id) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
         return requestProvider.delete(  url);
+    },
+    //TRANSACTIONS
+    registerUserOnWhiteList: async (data) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/registerUserOnWhiteList`
+        return requestProvider.post(url, data);
     }
 }
 

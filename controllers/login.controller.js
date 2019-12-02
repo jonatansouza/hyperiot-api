@@ -7,14 +7,13 @@ const ENV = require('../config/env');
     
 const loginController = {
     login: async (data) => {
-        const testPassword = "$2a$08$loTSHMhvC8bTfAvKqu99pe8zAsuFn2fMS2Ib8blwynTYGM1E.VHWi";
         const {password, email, token} = data;
         const userExists = await participants.participantExists(email);
         if(!userExists) {
             return false;
         }
         const userFetched = await participants.getParticipantByEmail(email);
-        const compare = await bcrypt.compare(password, testPassword);
+        const compare = await bcrypt.compare(password, userFetched.password);
         if(!compare) {
             return false;
         }
