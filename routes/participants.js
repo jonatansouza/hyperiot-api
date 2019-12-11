@@ -26,7 +26,7 @@ router.post('/', auth, function(req, res, next) {
   })
 });
 
-router.get('/:id', async function(req, res, next) {
+router.get('/:id', auth, async function(req, res, next) {
   const params = req.params.id
   try {
     const result = await participants.getParticipantByEmail(params);
@@ -40,9 +40,8 @@ router.get('/:id', async function(req, res, next) {
   }
 });
 
-router.delete('/:id', function(req, res, next) {
-  const params = req.params.id
-  participants.deleteParticipant(params).then(docs => {
+router.delete('/:id', auth, function(req, res, next) {
+  participants.deleteParticipant(req).then(docs => {
      res.json(docs);
   }).catch(e => {
     res.status(404).json({

@@ -22,8 +22,8 @@ router.post('/createAdmin', function(req, res, next) {
     name: "Administrador",
     registered: `${new Date().getTime()}`
   }
-  participants.insertParticipant(participant).then(docs => {
-     res.json(docs.data);
+  participants.createAdmin(participant).then(docs => {
+     res.json(docs);
   }).catch(err => {
     res.status(400).json({
       err, 

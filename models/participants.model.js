@@ -19,6 +19,16 @@ const participantsModel = {
         const result = await blockchain.getUserByEmail(params);
         return result.data || result;
     },
+    createAdmin: async (params) => {
+        try {
+            const result = await blockchain.insertUser(participantTemplate(params));
+            return Promise.resolve(result.data || result);
+        }catch(e) {
+            Promise.reject({
+                msg: 'Admin ja criado'
+            })
+        }
+    },
     insertParticipant: async function (params = {}) {
         const {sessionEmail, body} = params;
         console.log(sessionEmail, body)
@@ -32,7 +42,7 @@ const participantsModel = {
             console.log('user already exists')
         }catch (e) {
             console.log('creating a user already exists')
-            await blockchain.insertUser(participantTemplate(body));
+            await blockchain.insertUser(participantTemplate(body)); // TODO REVISAR
             // submeter email automatico
         }
         try {
@@ -40,15 +50,12 @@ const participantsModel = {
                 owner: sessionEmail,
                 allowedUser: body.email 
             }
-            console.log('submit transaction');
             const result = await blockchain.registerUserOnWhiteList(data);
-            console.log(result);
             return Promise.resolve(result.data || result);
 
         } catch(e) {
-            console.log('erro ao criar usuario', e); //melhorar a obtencao da mensagem de error dos peers
             return Promise.reject({
-                msg: 'Erro ao criar usuario'
+                msg: 'Usuário já se encontra na sua lista'
             })
         }
 
@@ -58,7 +65,20 @@ const participantsModel = {
         return participant;
     },
     deleteParticipant: async function (params) {
-        return blockchain.deleteUser(params);
+        // transaction
+        const data = {
+            owner: params.sessionEmail,
+            allowedUser: params.params.id
+        }
+        try{
+            const result = await blockchain.removeUserFromWhiteList(data);
+            return Promise.resolve(result.data || result);
+        }catch(e) {
+            console.log(e);
+            return Promise.reject({
+                msg: 'Erro na transação'
+            })
+        }
     },
     participantExists: async function(params) {
         try {

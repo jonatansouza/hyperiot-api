@@ -30,7 +30,7 @@ const blockchain = {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`
         return requestProvider.post(url, data);
     },
-    getAllAssets: async function (params) { 
+    getAllAssets: async function (params) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`;
         return requestProvider.get(url);
     },
@@ -39,21 +39,54 @@ const blockchain = {
         try {
             await requestProvider.head(url);
             return true;
-        }catch (e) {
+        } catch (e) {
             return false;
         }
     },
-    getAssetById: async function (params, email) { 
+    getAssetById: async function (params, email) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`
         return requestProvider.post(url, data);
     },
     deleteAssets: async function (id) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
-        return requestProvider.delete(  url);
+        return requestProvider.delete(url);
     },
-    //TRANSACTIONS
+    /**
+     *  TRANSACTIONS
+     */
+    
+    /**
+     * {owner, allowedUser}
+     */
     registerUserOnWhiteList: async (data) => {
         const url = `${ENV.BLOCKCHAIN_API_URL}/registerUserOnWhiteList`
+        return requestProvider.post(url, data);
+    },
+    /**
+     * {owner, allowedUser}
+     */
+    removeUserFromWhiteList: async (data) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/removeUserFromWhiteList`
+        return requestProvider.post(url, data);
+    },
+    /**
+     * {owner, allowedUser, commodity}
+     */
+    registerUserOnCommodity: async (data) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/registerUserOnCommodity`
+        return requestProvider.post(url, data);
+    },
+    /**
+     * {owner, allowedUser, commodity}
+     */
+    removeUserFromCommodity: async (data) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/removeUserFromCommodity`
+        return requestProvider.post(url, data);
+    },
+
+    // {allowedUser, commodity}
+    grantUserPermitionOnCommodity: async (data) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/grantUserPermitionOnCommodity`
         return requestProvider.post(url, data);
     }
 }
