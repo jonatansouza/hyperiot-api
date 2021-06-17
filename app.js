@@ -31,9 +31,6 @@ const swaggerOptions = {
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/explorer', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 app.use(cors({
   origin: 'http://localhost:4200',
   optionsSuccessStatus: 200
@@ -42,7 +39,6 @@ app.use(logger('dev'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
