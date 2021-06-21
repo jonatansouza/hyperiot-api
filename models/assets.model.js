@@ -14,16 +14,14 @@ const assetsModel = {
         return blockchain.getAllAssets(params);
     },
     insertAssets: async function (req) {
-        const {sessionEmail, body} = req;
-        const { sharedDataId, sharedDataDescription } = body;
+        const {sessionEmail, sharedDataId, body} = req;
+        const {sharedDataDescription} = body;
         if(!sharedDataId || !sharedDataDescription) {
             return Promise.reject({
                 msg: 'O id e a descrição são obrigatórios'
             })
         }
-        const lower = sharedDataId.toLocaleLowerCase();
-        const assetId = `${sessionEmail}-${lower}`.match(/[A-Za-z0-9-]/g).join('');
-        const exists = await blockchain.assetExists(sessionEmail, assetId);
+        const exists = await blockchain.assetExists(sessionEmail, sharedDataId);
         if(exists){
             return Promise.reject({
                 msg: 'Dispositivo já cadastrado!'
@@ -40,6 +38,7 @@ const assetsModel = {
         // params['owner'] = req.sessionEmail;
         // params['allowedUsers'] = [req.sessionEmail]
         // params['registered'] = new Date().getTime();
+        body.sharedDataId = sharedDataId;
         return blockchain.insertAssets(sessionEmail, body);
     },
     deleteAssets: async (params) => {

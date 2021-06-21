@@ -1,9 +1,12 @@
 const jwt = require('jsonwebtoken')
 const participant = require('../models/participants.model')
 const ENV = require('../config/env');
+const assetHelper = require('../helpers/assets.helper')
 
 const auth = async(req, res, next) => {
     req.sessionEmail = 'jhondoe@example.com';
+    const sharedDataId = req.body.sharedDataId || req.params.sharedDataId || '';
+    req.sharedDataId = sharedDataId ? assetHelper.parseAssetId(req.sessionEmail, sharedDataId) : '';
     next();
     return;
     // const headerAuth = req.header('Authorization');
