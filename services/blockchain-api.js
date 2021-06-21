@@ -26,16 +26,16 @@ const blockchain = {
     },
 
     // ASSETS
-    insertAssets: async function (data) {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`
+    insertAssets: async function (email, data) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data`
         return requestProvider.post(url, data);
     },
-    getAllAssets: async function (params) {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`;
+    getAllAssets: async function (email) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}`;
         return requestProvider.get(url);
     },
-    assetExists: async (id) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
+    assetExists: async (email, id) => {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}`
         try {
             await requestProvider.head(url);
             return true;
