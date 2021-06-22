@@ -32,7 +32,7 @@ const swaggerDocs = swaggerJsDoc(swaggerOptions);
 app.use('/explorer', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 app.use(cors({
-  origin: 'http://localhost:4200',
+  origin: 'http://localhost:8100',
   optionsSuccessStatus: 200
 }))
 app.use(logger('dev'));
