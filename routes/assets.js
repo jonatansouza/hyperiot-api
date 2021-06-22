@@ -1,8 +1,9 @@
 /* GET users listing. */
 const express = require('express');
 const router = express.Router();
-const assets = require('../models/assets.model')
-const auth = require('../interceptors/auth.interceptor')
+const assets = require('../models/assets.model');
+const auth = require('../interceptors/auth.interceptor');
+const debug = require('debug')('hyperiot-api:server');
 
 /* GET users listing. */
 router.get('/', auth, function (req, res, next) {
@@ -22,7 +23,7 @@ router.post('/', auth, function (req, res, next) {
     })
 });
 
-router.put('/:id', function (req, res, next) {
+router.put('/:id', auth, function (req, res, next) {
     assets.updateAsset(req.params.id, req.body).then(docs => {
         res.json(docs);
     }).catch(err => {
@@ -33,17 +34,34 @@ router.put('/:id', function (req, res, next) {
     })
 });
 
-router.get('/:id', function (req, res, next) {
-    const params = req.params.id;
-    assets.getAllAssets(params).then(docs => {
-        if (docs.length) {
-            res.json(docs[0]);
+router.get('/:id', auth, function (req, res, next) {
+    assets.getAssetById(req).then(docs => {
+        if (docs.data) {
+            res.status(200).json(docs.data);
             return;
         }
         res.status(404).send('Not found');
         return;
+    }).catch(e => {
+        res.status(404).send('Not found');
+        return;
     })
 });
+
+router.head('/:id', auth, async (req, res, next) => {
+    assets.assetExists(req).then(docs => {
+        if (docs.data) {
+            res.status(200).json(docs.data);
+            return;
+        }
+        res.status(404).send('Not found');
+        return;
+    }).catch(e => {
+        res.status(404).send('Not found');
+        return;
+    })
+});
+
 
 router.delete('/:id', async (req, res, next) => {
     const params = req.params.id;

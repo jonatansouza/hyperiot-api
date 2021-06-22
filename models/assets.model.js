@@ -1,6 +1,7 @@
 const blockchain = require('../services/blockchain-api');
 const loginController = require('../controllers/login.controller');
 const cloudController = require('../models/google-cloud');
+const debug = require('debug')('hyperiot-api:server');
 
 const assetsModel = {
     getAllAssets: async function (req) {
@@ -10,8 +11,12 @@ const assetsModel = {
            return resolve(data || []);
         });
     },
-    getAssetById: async function (params) {
-        return blockchain.getAllAssets(params);
+    getAssetById: async function ({sessionEmail, sharedDataId}) {
+        return blockchain.getAssetById(sessionEmail, sharedDataId)
+    },
+    assetExists: async function (req) {
+        const {sessionEmail, sharedDataId} = req;
+        return blockchain.assetExists(sessionEmail, sharedDataId);
     },
     insertAssets: async function (req) {
         const {sessionEmail, sharedDataId, body} = req;
@@ -21,12 +26,15 @@ const assetsModel = {
                 msg: 'O id e a descrição são obrigatórios'
             })
         }
-        const exists = await blockchain.assetExists(sessionEmail, sharedDataId);
-        if(exists){
+        try {
+            await blockchain.assetExists(sessionEmail, sharedDataId);
             return Promise.reject({
                 msg: 'Dispositivo já cadastrado!'
             })
-        }
+        } catch(e) {
+
+        }   
+        
         // const bucket = await cloudController.createBucket(assetId);
         // if(!bucket) {
         //    return Promise.reject({

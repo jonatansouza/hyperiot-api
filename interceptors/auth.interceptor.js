@@ -5,7 +5,7 @@ const assetHelper = require('../helpers/assets.helper')
 
 const auth = async(req, res, next) => {
     req.sessionEmail = 'jhondoe@example.com';
-    const sharedDataId = req.body.sharedDataId || req.params.sharedDataId || '';
+    const sharedDataId = req.body.sharedDataId || req.params.sharedDataId || req.params.id || '';
     req.sharedDataId = sharedDataId ? assetHelper.parseAssetId(req.sessionEmail, sharedDataId) : '';
     next();
     return;

@@ -9,6 +9,9 @@ operations = {
     get: (url) => {
         return axios.get(url, defaultOptions);
     },
+    head: (url) => {
+        return axios.head(url, defaultOptions);
+    },
     post: (url, data) => {
         return axios.post(url, data, defaultOptions)
     },

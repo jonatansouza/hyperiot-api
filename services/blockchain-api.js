@@ -36,16 +36,11 @@ const blockchain = {
     },
     assetExists: async (email, id) => {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}`
-        try {
-            await requestProvider.head(url);
-            return true;
-        } catch (e) {
-            return false;
-        }
+        return requestProvider.head(url)
     },
-    getAssetById: async function (params, email) {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity`
-        return requestProvider.post(url, data);
+    getAssetById: async function (email, id) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}`
+        return requestProvider.get(url);
     },
     deleteAssets: async function (id) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
