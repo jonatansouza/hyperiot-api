@@ -66,6 +66,10 @@ const assetsModel = {
     revokeAccess: async (params) => {
         const {sessionEmail, sharedDataId, body} = params;
         return blockchain.revokeAccess(sessionEmail, sharedDataId, body)
+    },
+    history: async (params) => {
+        const {sessionEmail, sharedDataId} = params;
+        return blockchain.history(sessionEmail, sharedDataId)
     },   
 }
 

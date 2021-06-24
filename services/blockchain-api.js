@@ -53,6 +53,10 @@ const blockchain = {
     revokeAccess: async function (email, id, payload) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/revoke-access`
         return requestProvider.post(url, payload);
+    },
+    history: async function (email, id) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/history`
+        return requestProvider.get(url);
     }
 }
 

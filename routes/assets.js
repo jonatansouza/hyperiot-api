@@ -100,4 +100,16 @@ router.post('/:id/revoke-access', auth, async (req, res, next) => {
     }
 });
 
+router.get('/:id/history', auth, async (req, res, next) => {
+    try {
+        const result = await assets.history(req);
+        res.status(200).json(result.data || {});
+    } catch(err) {
+        res.status(403).json({
+            err,
+            message: 'Forbidden'
+        })
+    }
+});
+
 module.exports = router;
