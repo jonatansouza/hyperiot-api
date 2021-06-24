@@ -58,6 +58,14 @@ const assetsModel = {
             return false;
         }
         
+    },
+    grantAccess: async (params) => {
+        const {sessionEmail, sharedDataId, body} = params;
+        return blockchain.grantAccess(sessionEmail, sharedDataId, body)
+    },
+    revokeAccess: async (params) => {
+        const {sessionEmail, sharedDataId, body} = params;
+        return blockchain.revokeAccess(sessionEmail, sharedDataId, body)
     },   
 }
 

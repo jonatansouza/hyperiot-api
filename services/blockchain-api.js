@@ -42,47 +42,17 @@ const blockchain = {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}`
         return requestProvider.get(url);
     },
-    deleteAssets: async function (id) {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/Commodity/${id}`
+    deleteAssets: async function (email, id) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}`
         return requestProvider.delete(url);
     },
-    /**
-     *  TRANSACTIONS
-     */
-    
-    /**
-     * {owner, allowedUser}
-     */
-    registerUserOnWhiteList: async (data) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/registerUserOnWhiteList`
-        return requestProvider.post(url, data);
+    grantAccess: async function (email, id, payload) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/grant-access`
+        return requestProvider.post(url, payload);
     },
-    /**
-     * {owner, allowedUser}
-     */
-    removeUserFromWhiteList: async (data) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/removeUserFromWhiteList`
-        return requestProvider.post(url, data);
-    },
-    /**
-     * {owner, allowedUser, commodity}
-     */
-    registerUserOnCommodity: async (data) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/registerUserOnCommodity`
-        return requestProvider.post(url, data);
-    },
-    /**
-     * {owner, allowedUser, commodity}
-     */
-    removeUserFromCommodity: async (data) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/removeUserFromCommodity`
-        return requestProvider.post(url, data);
-    },
-
-    // {allowedUser, commodity}
-    grantUserPermitionOnCommodity: async (data) => {
-        const url = `${ENV.BLOCKCHAIN_API_URL}/grantUserPermitionOnCommodity`
-        return requestProvider.post(url, data);
+    revokeAccess: async function (email, id, payload) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/revoke-access`
+        return requestProvider.post(url, payload);
     }
 }
 

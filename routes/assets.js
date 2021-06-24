@@ -63,7 +63,7 @@ router.head('/:id', auth, async (req, res, next) => {
 });
 
 
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', auth, async (req, res, next) => {
     const params = req.params.id;
     const result = await assets.deleteAssets(params);
     if(!result){
@@ -73,6 +73,31 @@ router.delete('/:id', async (req, res, next) => {
         return;
     }
     res.json(result);
+});
+
+
+router.post('/:id/grant-access', auth, async (req, res, next) => {
+    try {
+        const result = await assets.grantAccess(req);
+        res.status(200).json(result.data || {});
+    } catch(err) {
+        res.status(403).json({
+            err,
+            message: 'Forbidden'
+        })
+    }
+});
+
+router.post('/:id/revoke-access', auth, async (req, res, next) => {
+    try {
+        const result = await assets.revokeAccess(req);
+        res.status(200).json(result.data || {});
+    } catch(err) {
+        res.status(403).json({
+            err,
+            message: 'Forbidden'
+        })
+    }
 });
 
 module.exports = router;
