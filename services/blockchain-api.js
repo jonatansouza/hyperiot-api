@@ -57,7 +57,15 @@ const blockchain = {
     history: async function (email, id) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/history`
         return requestProvider.get(url);
-    }
+    },
+    getAllAssetsSharedWithMe: async function (email) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-with-me`;
+        return requestProvider.get(url);
+    },
+    requestPermission: async function (email, id) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data/${id}/request-permission`
+        return requestProvider.post(url, {});
+    },
 }
 
 module.exports = blockchain;

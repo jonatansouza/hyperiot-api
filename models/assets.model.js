@@ -70,7 +70,16 @@ const assetsModel = {
     history: async (params) => {
         const {sessionEmail, sharedDataId} = params;
         return blockchain.history(sessionEmail, sharedDataId)
-    },   
+    },
+    getAllAssetsSharedWithMe: async function (req) {
+        const {sessionEmail} = req;
+        return blockchain.getAllAssetsSharedWithMe(sessionEmail)
+    },
+    requestPermission: async (req) => {
+        const {sessionEmail} = req;
+        const {id} = req.params;
+        return blockchain.requestPermission(sessionEmail, id)
+    },
 }
 
 module.exports = assetsModel;

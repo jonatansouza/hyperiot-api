@@ -5,7 +5,14 @@ const assets = require('../models/assets.model');
 const auth = require('../interceptors/auth.interceptor');
 const debug = require('debug')('hyperiot-api:server');
 
-/* GET users listing. */
+
+router.get('/shared-with-me', auth, function (req, res, next) {
+    assets.getAllAssetsSharedWithMe(req).then(({data}) => {
+        res.status(200).json(data || []);
+    })
+});
+
+
 router.get('/', auth, function (req, res, next) {
     assets.getAllAssets(req).then(docs => {
         res.json(docs);
@@ -103,6 +110,18 @@ router.post('/:id/revoke-access', auth, async (req, res, next) => {
 router.get('/:id/history', auth, async (req, res, next) => {
     try {
         const result = await assets.history(req);
+        res.status(200).json(result.data || []);
+    } catch(err) {
+        res.status(403).json({
+            err,
+            message: 'Forbidden'
+        })
+    }
+});
+
+router.post('/:id/request-permission', auth, async (req, res, next) => {
+    try {
+        const result = await assets.requestPermission(req);
         res.status(200).json(result.data || {});
     } catch(err) {
         res.status(403).json({
