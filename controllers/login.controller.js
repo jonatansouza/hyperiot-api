@@ -1,32 +1,62 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
-const participants = require('../models/participants.model');
+const MongoDao = require('../config/mongo');
 const ENV = require('../config/env');
+const saltRounds = 10;  //  Data processing speed
 
-// const modifiedPasswd = await bcrypt.hash(password, 8)
-    
 const loginController = {
-    login: async (data) => {
-        const {password, email, token} = data;
-        const userExists = await participants.participantExists(email);
-        if(!userExists) {
-            return false;
+    login: async (req, res, next) => {
+        const {password, email} = req.body;
+        console.log(email, password)
+        const dbo = await MongoDao();
+        const user = await dbo.collection('users').findOne({email})
+        if(!user) {
+            req['operationError'] = {
+                status: 400,
+                message: 'User does not exists'
+            }
+            next();
+            return;
         }
-        const userFetched = await participants.getParticipantByEmail(email);
-        const compare = await bcrypt.compare(password, userFetched.password);
+        const compare = await bcrypt.compare(password, user.password);
         if(!compare) {
-            return false;
+            req['operationError'] = {
+                status: 401,
+                message: 'Not Authorized'
+            }
+            next();
+            return;
         }
-        return {
-            user: email,
+        req.operationResult = {
+            user: {
+                name: user.name,
+                email: user.email
+            },
             token: jwt.sign({email}, ENV.JWT_KEY)
         }
-        // return await jwt.verify(token, ENV.JWT_KEY);
+        next();
+        return 
     },
     generateToken: (email) => {
         return jwt.sign({email}, ENV.JWT_KEY);
+    },
+    createUser: async (req, res, next) => {
+        const {password: cleanPassword, email, name} = req.body;
+        const dbo = await MongoDao()
+        const result = await dbo.collection('users').findOne({email});
+        if(result) {
+            req['operationError'] = {
+                status: 400,
+                message: 'User exists'
+            }
+            next();
+            return;
+        }
+        const password = await bcrypt.hash(cleanPassword, saltRounds);
+        const created = await dbo.collection('users').insertOne({email, password, name}); 
+        req['operationResult'] = created.ops[0];
+        next();
     }
-
 }
 
 module.exports = loginController;
