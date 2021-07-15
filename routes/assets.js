@@ -42,9 +42,9 @@ router.put('/:id', auth, function (req, res, next) {
 });
 
 router.get('/:id', auth, function (req, res, next) {
-    assets.getAssetById(req).then(docs => {
-        if (docs.data) {
-            res.status(200).json(docs.data);
+    assets.getAssetById(req).then(doc => {
+        if (doc) {
+            res.status(200).json(doc);
             return;
         }
         res.status(404).send('Not found');
