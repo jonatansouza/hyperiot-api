@@ -7,7 +7,6 @@ const saltRounds = 10;  //  Data processing speed
 const loginController = {
     login: async (req, res, next) => {
         const {password, email} = req.body;
-        console.log(email, password)
         const dbo = await MongoDao();
         const user = await dbo.collection('users').findOne({email})
         if(!user) {

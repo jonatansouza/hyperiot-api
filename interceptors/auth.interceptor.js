@@ -17,6 +17,7 @@ const auth = async(req, res, next) => {
         const result = await dbo.collection('users').findOne({email});
         if (result) {
             req.sessionEmail = email;
+            req.preservedSharedDataId = sharedDataId;
             req.sharedDataId = sharedDataId ? assetHelper.parseAssetId(req.sessionEmail, sharedDataId) : '';
             next();
             return;

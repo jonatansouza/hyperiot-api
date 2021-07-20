@@ -1,10 +1,10 @@
 /* GET users listing. */
 const express = require('express');
+const zip = require('express-zip');
 const router = express.Router();
 const assets = require('../models/assets.model');
 const auth = require('../interceptors/auth.interceptor');
 const debug = require('debug')('hyperiot-api:server');
-
 
 router.get('/shared-with-me', auth, function (req, res, next) {
     assets.getAllAssetsSharedWithMe(req).then(({data}) => {
@@ -122,7 +122,7 @@ router.get('/:id/history', auth, async (req, res, next) => {
 router.post('/:id/request-permission', auth, async (req, res, next) => {
     try {
         const result = await assets.requestPermission(req);
-        res.status(200).json(result.data || {});
+        res.zip(result);
     } catch(err) {
         res.status(403).json({
             err,

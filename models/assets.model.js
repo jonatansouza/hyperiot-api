@@ -1,6 +1,7 @@
 const blockchain = require("../services/blockchain-api");
 const cloudController = require("../models/google-cloud");
 const MongoDao = require("../config/mongo");
+const googleStorage = require("../models/google-cloud");
 
 const assetsModel = {
   getAllAssets: async function (req) {
@@ -13,12 +14,14 @@ const assetsModel = {
   getAssetById: async function ({ sessionEmail, sharedDataId }) {
     const dbo = await MongoDao();
     const base = await blockchain.getAssetById(sessionEmail, sharedDataId);
-    const {resourceLocation, bucket} = await dbo.collection('assets').findOne({_id: sharedDataId})
+    const { resourceLocation, bucket } = await dbo
+      .collection("assets")
+      .findOne({ _id: sharedDataId });
     return Promise.resolve({
-        ...base.data,
-        resourceLocation,
-        bucket
-    })
+      ...base.data,
+      resourceLocation,
+      bucket,
+    });
   },
   assetExists: async function (req) {
     const { sessionEmail, sharedDataId } = req;
@@ -50,7 +53,7 @@ const assetsModel = {
           resourceLocation,
           _id: sharedDataId,
         }),
-0      ]);
+      ]);
     } catch (e) {}
   },
   deleteAssets: async (params) => {
@@ -79,9 +82,23 @@ const assetsModel = {
     return blockchain.getAllAssetsSharedWithMe(sessionEmail);
   },
   requestPermission: async (req) => {
-    const { sessionEmail } = req;
+    const { sessionEmail, preservedSharedDataId: sharedDataId } = req;
     const { id } = req.params;
-    return blockchain.requestPermission(sessionEmail, id);
+    const result = await blockchain.requestPermission(sessionEmail, id);
+    if (!result.data) {
+      return Promise.reject();
+    }
+    try {
+      const dbo = await MongoDao();
+      console.log(sharedDataId);
+      const { resourceLocation, bucket } = await dbo
+        .collection("assets")
+        .findOne({ _id: sharedDataId });
+      console.log(resourceLocation, bucket);
+      return googleStorage.getFiles(bucket, resourceLocation);
+    } catch (e) {
+      console.log(e);
+    }
   },
 };
 
