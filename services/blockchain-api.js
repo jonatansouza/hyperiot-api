@@ -30,6 +30,10 @@ const blockchain = {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data`
         return requestProvider.post(url, data);
     },
+    updateAssets: async function (email, data) {
+        const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}/shared-data`
+        return requestProvider.put(url, data);
+    },
     getAllAssets: async function (email) {
         const url = `${ENV.BLOCKCHAIN_API_URL}/owners/${email}`;
         return requestProvider.get(url);

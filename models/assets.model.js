@@ -1,6 +1,5 @@
 const blockchain = require("../services/blockchain-api");
 const cloudController = require("../models/google-cloud");
-const MongoDao = require("../config/mongo");
 const googleStorage = require("../models/google-cloud");
 
 const assetsModel = {
@@ -12,15 +11,9 @@ const assetsModel = {
     });
   },
   getAssetById: async function ({ sessionEmail, sharedDataId }) {
-    const dbo = await MongoDao();
     const base = await blockchain.getAssetById(sessionEmail, sharedDataId);
-    const { resourceLocation, bucket } = await dbo
-      .collection("assets")
-      .findOne({ _id: sharedDataId });
     return Promise.resolve({
-      ...base.data,
-      resourceLocation,
-      bucket,
+      ...base.data
     });
   },
   assetExists: async function (req) {
@@ -30,9 +23,9 @@ const assetsModel = {
   insertAssets: async function (req) {
     const { sessionEmail, sharedDataId, body } = req;
     const { sharedDataDescription, bucket, resourceLocation } = body;
-    if (!sharedDataId || !sharedDataDescription) {
+    if (!sharedDataId || !sharedDataDescription || !bucket || !resourceLocation) {
       return Promise.reject({
-        msg: "O id e a descrição são obrigatórios",
+        msg: "O id, descrição, bucket e resourceLocation são obrigatórios",
       });
     }
     try {
@@ -44,16 +37,27 @@ const assetsModel = {
 
     try {
       body.sharedDataId = sharedDataId;
-      const dbo = await MongoDao();
-      return Promise.all([
-        blockchain.insertAssets(sessionEmail, body),
-        dbo.collection("assets").insertOne({
-          owner: sessionEmail,
-          bucket,
-          resourceLocation,
-          _id: sharedDataId,
-        }),
-      ]);
+      return blockchain.insertAssets(sessionEmail, body)
+    } catch (e) {}
+  },
+  updateAssets: async function (req) {
+    const { sessionEmail, sharedDataId, body } = req;
+    const { sharedDataDescription, bucket, resourceLocation } = body;
+    if (!sharedDataId || !sharedDataDescription || !bucket || !resourceLocation) {
+      return Promise.reject({
+        msg: "O id, descrição, bucket e resourceLocation são obrigatórios",
+      });
+    }
+    try {
+      await blockchain.assetExists(sessionEmail, sharedDataId);
+      return Promise.reject({
+        msg: "Dispositivo já cadastrado!",
+      });
+    } catch (e) {}
+
+    try {
+      body.sharedDataId = sharedDataId;
+      return blockchain.updateAssets(sessionEmail, body)
     } catch (e) {}
   },
   deleteAssets: async (params) => {
@@ -89,12 +93,9 @@ const assetsModel = {
       return Promise.reject();
     }
     try {
-      const dbo = await MongoDao();
-      console.log(sharedDataId);
-      const { resourceLocation, bucket } = await dbo
-        .collection("assets")
-        .findOne({ _id: sharedDataId });
-      console.log(resourceLocation, bucket);
+      const {ownerId} = req.body;
+      const {data} = await blockchain.getAssetById(ownerId, sharedDataId);
+      const { resourceLocation, bucket } = data
       return googleStorage.getFiles(bucket, resourceLocation);
     } catch (e) {
       console.log(e);
